@@ -30,8 +30,8 @@ def plot_kde_from_csvs(files, column, labels, metric_name, hyperparam_name, gen_
 
         sns.kdeplot(df[column], bw_adjust=0.5, label=label,
                     linewidth=2, color=palette[i])
-        plt.axvline(df[column].mean(), linestyle='--',
-                    label=f'Mean of {label}', color=palette[i])
+        plt.axvline(df[column].median(), linestyle='--',
+                    label=f'Median of {label}', color=palette[i])
     plt.xlabel(metric_name)
     plt.ylabel("Density")
     # plt.title("Overlapping KDE Plots")
@@ -40,6 +40,8 @@ def plot_kde_from_csvs(files, column, labels, metric_name, hyperparam_name, gen_
     # plt.show()
     plt.savefig(os.path.join(gen_dir, f'{plot_name}-{column}-b{bucket}.pdf'))
 
+
+# Start Fill these
 
 files = [
     '../Metrics Generated/metrics-metjob-3.csv',
@@ -59,6 +61,8 @@ labels = [
 model_name = 'rf2'
 plot_name = 'num_rec'
 hyperparam_name = 'No. of Recycles'
+
+# END Fill these
 
 metrics = [
     {
