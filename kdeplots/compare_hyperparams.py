@@ -11,6 +11,9 @@ def plot_kde_from_csvs(files, column, labels, metric_name, hyperparam_name, gen_
     sns.set_context("paper", font_scale=1.25)
     sns.set_palette("muted")
 
+    # Define your colors and configs
+    palette = sns.color_palette("muted", len(files))
+
     plt.figure(figsize=(5, 3))
 
     with open('../count_stats.json', 'r') as f:
@@ -25,8 +28,10 @@ def plot_kde_from_csvs(files, column, labels, metric_name, hyperparam_name, gen_
         if column not in df.columns:
             raise ValueError(f"Column '{column}' not found in {file}")
 
-        sns.kdeplot(df[column], bw_adjust=0.5, label=label, linewidth=2)
-
+        sns.kdeplot(df[column], bw_adjust=0.5, label=label,
+                    linewidth=2, color=palette[i])
+        plt.axvline(df[column].mean(), linestyle='--',
+                    label=f'Mean of {label}', color=palette[i])
     plt.xlabel(metric_name)
     plt.ylabel("Density")
     # plt.title("Overlapping KDE Plots")
