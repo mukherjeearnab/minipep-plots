@@ -44,23 +44,23 @@ def plot_kde_from_csvs(files, column, labels, metric_name, hyperparam_name, gen_
 # Start Fill these
 
 files = [
-    '../Metrics Generated/metrics-metjob-3.csv',
-    '../Metrics Generated/metrics-metjob-11.csv',
-    '../Metrics Generated/metrics-metjob-17.csv'
+    '../Metrics Generated/metrics-metjob-8.csv',
+    '../Metrics Generated/metrics-metjob-18.csv',
+    # '../Metrics Generated/metrics-metjob-19.csv'
 ]
 
 for i, file in enumerate(files):
     files[i] = os.path.abspath(file)
 
 labels = [
-    '6',
-    '24',
-    '48'
+    '0',
+    '5',
+    # '48'
 ]
 
-model_name = 'rf2'
-plot_name = 'num_rec'
-hyperparam_name = 'No. of Recycles'
+model_name = 'af2'
+plot_name = 'num_rlx'
+hyperparam_name = 'Num Relax'
 
 # END Fill these
 
