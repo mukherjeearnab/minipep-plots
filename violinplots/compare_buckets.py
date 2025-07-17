@@ -69,21 +69,21 @@ def plot_violin_from_csv(file, column, metric_name, gen_dir):
 
 # Start Fill these
 
-file = '../Metrics Generated/metrics-metjob-25.csv'
+file = '../Metrics Generated/metrics-metjob-35.csv'
 file = os.path.abspath(file)
 
-model_name = 'af2'
+model_name = 'dmp-best'
 # END Fill these
 
 metrics = [
-    {
-        'metric': 'lddt',
-        'metric_name': 'LDDT',
-    },
-    {
-        'metric': 'rmsd',
-        'metric_name': 'RMSD',
-    },
+    # {
+    #     'metric': 'lddt',
+    #     'metric_name': 'LDDT',
+    # },
+    # {
+    #     'metric': 'rmsd',
+    #     'metric_name': 'RMSD',
+    # },
     {
         'metric': 'tm_score',
         'metric_name': 'TM-score',
