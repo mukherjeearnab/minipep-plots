@@ -44,8 +44,8 @@ def plot_kde_from_csvs(files, column, labels, metric_name, hyperparam_name, gen_
 # Start Fill these
 
 files = [
-    '../Metrics Generated/metrics-metjob-8.csv',
-    '../Metrics Generated/metrics-metjob-18.csv',
+    '../Metrics Generated/metrics-metjob-14.csv',
+    '../Metrics Generated/metrics-metjob-32.csv',
     # '../Metrics Generated/metrics-metjob-19.csv'
 ]
 
