@@ -38,7 +38,7 @@ def plot_scatter_from_csv(file, model_name, gen_dir):
         )
 
         plt.xlabel("LDDT")
-        plt.ylabel('pLDDT')
+        plt.ylabel('Confidence')
 
         # plt.title("Overlapping KDE Plots")
         # plt.legend(title="Hllo")
@@ -52,10 +52,10 @@ def plot_scatter_from_csv(file, model_name, gen_dir):
 # Start Fill these
 
 
-file = '../Metrics Generated/plddt-1.csv'
+file = '../Metrics Generated/plddt-5.csv'
 file = os.path.abspath(file)
 
-model_name = 'rf2'
+model_name = 'dmp'
 # END Fill these
 
 gen_dir = os.path.join('./gen')

@@ -39,9 +39,9 @@ def plot_violin_from_csvs(files: list, models: list, column, metric_name, gen_di
         # === Step 3: Create DataFrame for Seaborn ===
         plot_df = pd.DataFrame(bucket_match)
 
-        sns.violinplot(data=plot_df, bw_adjust=0.2, x="model",
+        sns.violinplot(data=plot_df, x="model",
                        # options: 'box', 'quartile', 'point', 'stick', None
-                       y="value", inner="box",
+                       y="value", hue="model", inner="box",
                        #    cut=0,              # restrict KDE to the observed range
                        linewidth=1.2)
 
@@ -76,11 +76,11 @@ def plot_violin_from_csvs(files: list, models: list, column, metric_name, gen_di
 # Start Fill these
 
 files = [
-    '../Metrics Generated/metrics-metjob-33.csv',
-    '../Metrics Generated/metrics-metjob-20.csv',
+    '../Metrics Generated/metrics-metjob-34.csv',
+    '../Metrics Generated/metrics-metjob-31.csv',
     '../Metrics Generated/metrics-metjob-14.csv',
     '../Metrics Generated/metrics-metjob-26.csv',
-    '../Metrics Generated/metrics-metjob-35.csv'
+    '../Metrics Generated/metrics-metjob-36.csv'
 ]
 
 models = [
@@ -91,7 +91,7 @@ models = [
     'DMPfold2'
 ]
 
-metricplot = 'inter-model'
+metricplot = 'inter-model-womsa'
 # END Fill these
 
 files = [os.path.abspath(file) for file in files]
