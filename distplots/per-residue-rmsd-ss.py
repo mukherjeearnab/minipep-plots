@@ -8,10 +8,10 @@ import numpy as np
 
 def plot_violin_from_csv(file, gen_dir):
 
-    with open('../count_stats.json', 'r') as f:
+    with open('../ss_clusters-alt.json', 'r') as f:
         count_dict = json.load(f)
 
-    for bucket in ['20', '30', '40', '50']:
+    for bucket in ['alpha-helix-rich', 'beta-sheet-rich', 'disordered', 'mixed']:
         sns.set_theme(style="whitegrid")
         sns.set_context("paper", font_scale=1.25)
         sns.set_palette("muted")
@@ -20,14 +20,16 @@ def plot_violin_from_csv(file, gen_dir):
 
         df = pd.read_csv(file)
 
-        df = df[df['pdb_id'].isin(count_dict['id_bucket'][bucket])]
+        df = df[df['pdb_id'].isin(count_dict[bucket])]
 
         # --- Compute statistics ---
 
         # Add to master list with file identifier
-        bucket = int(bucket)
+        # bucket = int(bucket)
 
         data = df['per_res_ca_rmsd_A'].dropna()
+
+        data = data * 10
 
         mean = data.mean()
         median = data.median()
@@ -35,7 +37,7 @@ def plot_violin_from_csv(file, gen_dir):
 
         ax = sns.histplot(data, kde=True,
                           # <-- increase this to smooth the KDE)
-                          stat="count", bins='auto', kde_kws={'bw_adjust': 0.6})
+                          stat="count", bins=100, kde_kws={'bw_adjust': 0.6})
 
         # --- Add vertical lines ---
         plt.axvline(mean, color='red', linestyle='-',
@@ -73,10 +75,10 @@ def plot_violin_from_csv(file, gen_dir):
 
 # Start Fill these
 
-file = "c:\\Users\\Arnab\\Desktop\\per-residue-rmsd-job-omf-6.csv"
+file = "c:\\Users\\Arnab\\Desktop\\per-residue-rmsd-job-dmp-6.csv"
 file = os.path.abspath(file)
 
-model_name = 'omf-best'
+model_name = 'dmp-best'
 # END Fill these
 
 gen_dir = os.path.join('./gen-rmsd', model_name)
