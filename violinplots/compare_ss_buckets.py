@@ -12,7 +12,7 @@ names = {
 }
 
 
-def plot_violin_from_csv(file, column, metric_name, gen_dir):
+def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
     sns.set_theme(style="whitegrid")
     sns.set_context("paper", font_scale=1.25)
     sns.set_palette("muted")
@@ -28,36 +28,60 @@ def plot_violin_from_csv(file, column, metric_name, gen_dir):
     for bucket in ['alpha-helix-rich', 'beta-sheet-rich', 'disordered', 'mixed']:
         df = pd.read_csv(file)
         df = df[df['pdb_id'].isin(count_dict[bucket])]
-        col = df[column]  # or set explicitly, e.g., 'values'
+        # col = df[column]  # or set explicitly, e.g., 'values'
 
-        sequence = col.dropna().tolist()
+        # sequence = col.dropna().tolist()
 
-        # Add to master list with file identifier
-        # bucket = int(bucket)
-        all_matches.extend([{
-            "bucket": f'{names[bucket]}',
-            "value": v
-        } for v in sequence])
+        # # Add to master list with file identifier
+        # # bucket = int(bucket)
+        # all_matches.extend([{
+        #     "bucket": f'{names[bucket]}',
+        #     "value": v
+        # } for v in sequence])
+        # Compute summary stats for each type
+        summary = df.groupby("serial")[column].agg(
+            median="median", min="min", max="max")
+        summary = summary.reset_index()
+
+        # Reshape into long format so seaborn can plot a split violin
+        long = pd.melt(summary,
+                       id_vars="serial",
+                       value_vars=["median", m_type],
+                       var_name="statistic",
+                       value_name=column)
+
+        for _, row in long.iterrows():
+            all_matches.append({
+                "bucket": f'{names[bucket]}',
+                "value": row[column],
+                "Statistic": row['statistic']
+            })
 
     # === Step 3: Create DataFrame for Seaborn ===
     plot_df = pd.DataFrame(all_matches)
 
     sns.violinplot(data=plot_df, x="bucket",
                    # options: 'box', 'quartile', 'point', 'stick', None
-                   y="value", inner="box", hue="bucket",
+                   y="value", inner="quartile", hue='Statistic', split=True,
+                   gap=0.1, density_norm='width',
                    #    cut=0,              # restrict KDE to the observed range
-                   linewidth=1.2)
+                   linewidth=1.2,
+                   palette={
+                       "median": "#A6CEE3",   # blue
+                       m_type: "#FDBE85"   # coral
+                   })
 
     plt.xlabel("Secondary Structure")
     plt.ylabel(metric_name)
     # plt.title("Overlapping KDE Plots")
     # plt.legend(title="Hllo")
     # plt.xticks(rotation=45)
-    plt.ylim(metric['limits'])
+    plt.ylim(limits)
     plt.tight_layout()
     # plt.show()
     # exit()
-    plt.savefig(os.path.join(gen_dir, f'ss-bucket_wise-{column}.pdf'))
+    plt.savefig(os.path.join(
+        gen_dir, f'ss-bucket_wise-{column}.pdf'), bbox_inches="tight")
 
 
 # # === Step 4: Plot Violin Plot ===
@@ -77,10 +101,10 @@ def plot_violin_from_csv(file, column, metric_name, gen_dir):
 
 # Start Fill these
 
-file = '../Metrics Generated/metrics-metjob-20.csv'
+file = '../Metrics Generated/metrics-metjob-v2-5.csv'
 file = os.path.abspath(file)
 
-model_name = 'rf2-best'
+model_name = 'dmp-best'
 # END Fill these
 
 metrics = [
@@ -93,13 +117,21 @@ metrics = [
     #     'metric_name': 'RMSD',
     # },
     {
+        'metric': 'native_contract',
+        'metric_name': 'Native Contract',
+        'm_type': 'max',
+        'limits': (0.2, 1.0)
+    },
+    {
         'metric': 'tm_score',
         'metric_name': 'TM-score',
+        'm_type': 'max',
         'limits': (0.0, 1.0)
     },
     {
         'metric': 'gdt_ts',
         'metric_name': 'GDT TS',
+        'm_type': 'max',
         'limits': (0, 100)
     }
 ]
@@ -110,4 +142,4 @@ os.makedirs(gen_dir, exist_ok=True)
 
 for metric in metrics:
     plot_violin_from_csv(
-        file, metric['metric'], metric['metric_name'], gen_dir)
+        file, metric['metric'], metric['m_type'], metric['limits'], metric['metric_name'], gen_dir)
