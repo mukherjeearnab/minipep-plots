@@ -5,7 +5,7 @@ import json
 import os
 
 
-def plot_violin_from_csvs(files: list, models: list, column, metric_name, gen_dir):
+def plot_violin_from_csvs(files: list, models: list, column, m_type, limits, metric_name, gen_dir):
 
     with open('../count_stats.json', 'r') as f:
         count_dict = json.load(f)
@@ -25,37 +25,68 @@ def plot_violin_from_csvs(files: list, models: list, column, metric_name, gen_di
             df = df[df['pdb_id'].isin(
                 count_dict['id_bucket'][bucket]
             )]
-            col = df[column]  # or set explicitly, e.g., 'values'
+            # col = df[column]  # or set explicitly, e.g., 'values'
 
-            sequence = col.dropna().tolist()
+            # sequence = col.dropna().tolist()
 
             # Add to master list with file identifier
             bucket_ = int(bucket)
-            bucket_match.extend([{
-                "model": model,
-                "value": v
-            } for v in sequence])
+            # bucket_match.extend([{
+            #     "model": model,
+            #     "value": v
+            # } for v in sequence])
+
+            # Compute summary stats for each type
+            summary = df.groupby("serial")[column].agg(
+                median="median", min="min", max="max")
+            summary = summary.reset_index()
+
+            # Reshape into long format so seaborn can plot a split violin
+            long = pd.melt(summary,
+                           id_vars="serial",
+                           value_vars=["median", m_type],
+                           var_name="statistic",
+                           value_name=column)
+
+            for _, row in long.iterrows():
+                bucket_match.append({
+                    "model": model,
+                    "value": row[column],
+                    "Statistic": row['statistic']
+                })
 
         # === Step 3: Create DataFrame for Seaborn ===
         plot_df = pd.DataFrame(bucket_match)
 
+        # sns.violinplot(data=plot_df, x="model",
+        #                # options: 'box', 'quartile', 'point', 'stick', None
+        #                y="value", hue="model", inner="box",
+        #                #    cut=0,              # restrict KDE to the observed range
+        #                linewidth=1.2)
+
         sns.violinplot(data=plot_df, x="model",
                        # options: 'box', 'quartile', 'point', 'stick', None
-                       y="value", hue="model", inner="box",
+                       y="value", inner="quartile", hue='Statistic', split=True,
+                       gap=0.1,  # density_norm='width',
                        #    cut=0,              # restrict KDE to the observed range
-                       linewidth=1.2)
+                       linewidth=1.2,
+                       palette={
+                           "median": "#A6CEE3",   # blue
+                           m_type: "#FDBE85"   # coral
+                       })
 
         plt.xlabel("Prediction Model")
         plt.ylabel(metric_name)
         # plt.title("Overlapping KDE Plots")
         # plt.legend(title="Hllo")
         plt.xticks(rotation=15)
+        plt.ylim(limits)
         plt.tight_layout()
         # plt.show()
         # exit()
         bucket_range = f'{bucket_-10}-{bucket_-1 if bucket_ < 50 else bucket_}'
         plt.savefig(os.path.join(
-            gen_dir, f'bucket_wise_{bucket_range}-{column}.pdf'))
+            gen_dir, f'bucket_wise_{bucket_range}-{column}.pdf'), bbox_inches="tight")
 
 
 # # === Step 4: Plot Violin Plot ===
@@ -76,11 +107,11 @@ def plot_violin_from_csvs(files: list, models: list, column, metric_name, gen_di
 # Start Fill these
 
 files = [
-    '../Metrics Generated/metrics-metjob-34.csv',
-    '../Metrics Generated/metrics-metjob-31.csv',
-    '../Metrics Generated/metrics-metjob-14.csv',
-    '../Metrics Generated/metrics-metjob-26.csv',
-    '../Metrics Generated/metrics-metjob-36.csv'
+    '../Metrics Generated/metrics-metjob-v2-1.csv',
+    '../Metrics Generated/metrics-metjob-v2-2.csv',
+    '../Metrics Generated/metrics-metjob-v2-3.csv',
+    '../Metrics Generated/metrics-metjob-v2-4.csv',
+    '../Metrics Generated/metrics-metjob-v2-5.csv'
 ]
 
 models = [
@@ -91,7 +122,7 @@ models = [
     'DMPfold2'
 ]
 
-metricplot = 'inter-model-womsa'
+metricplot = 'inter-model'
 # END Fill these
 
 files = [os.path.abspath(file) for file in files]
@@ -107,12 +138,22 @@ metrics = [
     #     'metric_name': 'RMSD',
     # },
     {
+        'metric': 'native_contract',
+        'metric_name': 'Native Contract',
+        'm_type': 'max',
+        'limits': (0.2, 1.0)
+    },
+    {
         'metric': 'tm_score',
         'metric_name': 'TM-score',
+        'm_type': 'max',
+        'limits': (0.0, 1.0)
     },
     {
         'metric': 'gdt_ts',
         'metric_name': 'GDT TS',
+        'm_type': 'max',
+        'limits': (0, 100)
     }
 ]
 
@@ -122,4 +163,4 @@ os.makedirs(gen_dir, exist_ok=True)
 
 for metric in metrics:
     plot_violin_from_csvs(
-        files, models, metric['metric'], metric['metric_name'], gen_dir)
+        files, models, metric['metric'], metric['m_type'], metric['limits'], metric['metric_name'], gen_dir)
