@@ -33,9 +33,11 @@ def plot_violin_from_csv(file, gen_dir):
         median = data.median()
         std = data.std()
 
+        bin_width = 0.0125              # your desired bar width
+        bins = np.arange(data.min(), data.max() + bin_width, bin_width)
         ax = sns.histplot(data, kde=True,
                           # <-- increase this to smooth the KDE)
-                          stat="count", bins='auto', kde_kws={'bw_adjust': 0.6})
+                          stat="count", bins=bins, kde_kws={'bw_adjust': 0.6})
 
         # --- Add vertical lines ---
         plt.axvline(mean, color='red', linestyle='-',
@@ -73,10 +75,10 @@ def plot_violin_from_csv(file, gen_dir):
 
 # Start Fill these
 
-file = "c:\\Users\\Arnab\\Desktop\\per-residue-rmsd-job-omf-6.csv"
+file = "c:\\Users\\Arnab\\Desktop\\per-residue-rmsd-job-dmp-5.csv"
 file = os.path.abspath(file)
 
-model_name = 'omf-best'
+model_name = 'dmp-best'
 # END Fill these
 
 gen_dir = os.path.join('./gen-rmsd', model_name)
