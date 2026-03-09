@@ -124,10 +124,11 @@ for metric in metrics:
     # line3 += ' \\\\'
     # line4 += ' \\\\'
     print(line1)
-    print(line2, '\\hline \\hline')
+    print(line2, '\\hline')
     # print(line3)
     # print(line4)
 
+print('\\hline')
 
 ######################################
 # DO IT FOR SECONDARY STRUCTURE WISE
