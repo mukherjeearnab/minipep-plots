@@ -37,22 +37,22 @@ def plot_violin_from_csvs(files: list, models: list, column, m_type, limits, met
             # } for v in sequence])
 
             # Compute summary stats for each type
-            summary = df.groupby("serial")[column].agg(
-                median="median", min="min", max="max")
-            summary = summary.reset_index()
+            # summary = df.groupby("serial")[column].agg(
+            #     median="median", min="min", max="max")
+            # summary = summary.reset_index()
 
-            # Reshape into long format so seaborn can plot a split violin
-            long = pd.melt(summary,
-                           id_vars="serial",
-                           value_vars=["median", m_type],
-                           var_name="statistic",
-                           value_name=column)
+            # # Reshape into long format so seaborn can plot a split violin
+            # long = pd.melt(summary,
+            #                id_vars="serial",
+            #                value_vars=["median", m_type],
+            #                var_name="statistic",
+            #                value_name=column)
 
-            for _, row in long.iterrows():
+            for _, row in df.iterrows():
                 bucket_match.append({
                     "model": model,
                     "value": row[column],
-                    "Statistic": row['statistic']
+                    # "Statistic": row['statistic']
                 })
 
         # === Step 3: Create DataFrame for Seaborn ===
@@ -66,15 +66,15 @@ def plot_violin_from_csvs(files: list, models: list, column, m_type, limits, met
 
         sns.violinplot(data=plot_df, x="model",
                        # options: 'box', 'quartile', 'point', 'stick', None
-                       y="value", inner="quartile", hue='Statistic', split=True,
+                       y="value", inner="quartile",  hue='model',  # hue='Statistic',  # split=True,
                        gap=0.1,  # density_norm='width',
                        #    cut=0,              # restrict KDE to the observed range
                        linewidth=1.2,
-                       palette={
-                           "median": "#A6CEE3",   # blue
-                           m_type: "#FDBE85"   # coral
-                       })
-
+                       #    palette={
+                       #        "median": "#A6CEE3",   # blue
+                       #        m_type: "#FDBE85"   # coral
+                       #    }
+                       )
         plt.xlabel("Prediction Model")
         plt.ylabel(metric_name)
         # plt.title("Overlapping KDE Plots")
@@ -107,11 +107,11 @@ def plot_violin_from_csvs(files: list, models: list, column, m_type, limits, met
 # Start Fill these
 
 files = [
-    '../Metrics Generated/metrics-metjob-v2-1.csv',
-    '../Metrics Generated/metrics-metjob-v2-2.csv',
+    '../Metrics Generated/metrics-metjob-v2-6.csv',
+    '../Metrics Generated/metrics-metjob-v2-7.csv',
     '../Metrics Generated/metrics-metjob-v2-3.csv',
     '../Metrics Generated/metrics-metjob-v2-4.csv',
-    '../Metrics Generated/metrics-metjob-v2-5.csv'
+    '../Metrics Generated/metrics-metjob-v2-8.csv'
 ]
 
 models = [
@@ -122,7 +122,7 @@ models = [
     'DMPfold2'
 ]
 
-metricplot = 'inter-model'
+metricplot = 'inter-model-womsa'
 # END Fill these
 
 files = [os.path.abspath(file) for file in files]
