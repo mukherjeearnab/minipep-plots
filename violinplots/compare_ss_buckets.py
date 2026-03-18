@@ -39,22 +39,22 @@ def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
         #     "value": v
         # } for v in sequence])
         # Compute summary stats for each type
-        summary = df.groupby("serial")[column].agg(
-            median="median", min="min", max="max")
-        summary = summary.reset_index()
+        # summary = df.groupby("serial")[column].agg(
+        #     median="median", min="min", max="max")
+        # summary = summary.reset_index()
 
-        # Reshape into long format so seaborn can plot a split violin
-        long = pd.melt(summary,
-                       id_vars="serial",
-                       value_vars=["median", m_type],
-                       var_name="statistic",
-                       value_name=column)
+        # # Reshape into long format so seaborn can plot a split violin
+        # long = pd.melt(summary,
+        #                id_vars="serial",
+        #                value_vars=["median", m_type],
+        #                var_name="statistic",
+        #                value_name=column)
 
-        for _, row in long.iterrows():
+        for _, row in df.iterrows():
             all_matches.append({
                 "bucket": f'{names[bucket]}',
                 "value": row[column],
-                "Statistic": row['statistic']
+                # "Statistic": row['statistic']
             })
 
     # === Step 3: Create DataFrame for Seaborn ===
@@ -62,14 +62,15 @@ def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
 
     sns.violinplot(data=plot_df, x="bucket",
                    # options: 'box', 'quartile', 'point', 'stick', None
-                   y="value", inner="quartile", hue='Statistic', split=True,
+                   y="value", inner="quartile", hue='bucket',  # split=True,
                    gap=0.1, density_norm='width',
                    #    cut=0,              # restrict KDE to the observed range
                    linewidth=1.2,
-                   palette={
-                       "median": "#A6CEE3",   # blue
-                       m_type: "#FDBE85"   # coral
-                   })
+                   #    palette={
+                   #        "median": "#A6CEE3",   # blue
+                   #        m_type: "#FDBE85"   # coral
+                   #    }
+                   )
 
     plt.xlabel("Secondary Structure")
     plt.ylabel(metric_name)
@@ -101,10 +102,10 @@ def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
 
 # Start Fill these
 
-file = '../Metrics Generated/metrics-metjob-v2-5.csv'
+file = '../Metrics Generated/metrics-metjob-v2-4.csv'
 file = os.path.abspath(file)
 
-model_name = 'dmp-best'
+model_name = 'omf-best'
 # END Fill these
 
 metrics = [

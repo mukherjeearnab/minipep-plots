@@ -5,7 +5,7 @@ import json
 import os
 
 
-def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
+def plot_violin_from_csv(file, gen_dir):
     sns.set_theme(style="whitegrid")
     sns.set_context("paper", font_scale=1.25)
     sns.set_palette("muted")
@@ -37,7 +37,7 @@ def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
         #     median="median", min="min", max="max")
         # summary = summary.reset_index()
 
-        # # Reshape into long format so seaborn can plot a split violin
+        # Reshape into long format so seaborn can plot a split violin
         # long = pd.melt(summary,
         #                id_vars="serial",
         #                value_vars=["median", m_type],
@@ -47,8 +47,7 @@ def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
         for _, row in df.iterrows():
             all_matches.append({
                 "bucket": f'{bucket-10}-{bucket-1 if bucket < 50 else bucket}',
-                "value": row[column],
-                # "Statistic": row['statistic']
+                "value": row['per_res_ca_rmsd_A']
             })
 
     # === Step 3: Create DataFrame for Seaborn ===
@@ -67,16 +66,16 @@ def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
                    )
 
     plt.xlabel("Sequence Lengths")
-    plt.ylabel(metric_name)
+    plt.ylabel(r"Per Residue c$\alpha$ RMSD (Å)")
     # plt.title("Overlapping KDE Plots")
     # plt.legend(title="Hllo")
     # plt.xticks(rotation=45)
-    plt.ylim(limits)
+    plt.ylim(0, 1.5)
     plt.tight_layout()
     # plt.show()
     # exit()
     plt.savefig(os.path.join(
-        gen_dir, f'bucket_wise-{column}.pdf'), bbox_inches="tight")
+        gen_dir, f'bucket_wise-rmsd.pdf'), bbox_inches="tight")
 
 
 # # === Step 4: Plot Violin Plot ===
@@ -96,41 +95,14 @@ def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
 
 # Start Fill these
 
-file = '../Metrics Generated/metrics-metjob-v2-4.csv'
+file = '../Metrics Generated/per-residue-rmsd-job-dmp-5.csv'
 file = os.path.abspath(file)
 
-model_name = 'omf-best'
+model_name = 'dmp-best'
 # END Fill these
-
-metrics = [
-    # {
-    #     'metric': 'lddt',
-    #     'metric_name': 'LDDT',
-    # },
-    {
-        'metric': 'native_contract',
-        'metric_name': 'Native Contract',
-        'm_type': 'max',
-        'limits': (0.2, 1.0)
-    },
-    {
-        'metric': 'tm_score',
-        'metric_name': 'TM-score',
-        'm_type': 'max',
-        'limits': (0.0, 1.0)
-    },
-    {
-        'metric': 'gdt_ts',
-        'metric_name': 'GDT TS',
-        'm_type': 'max',
-        'limits': (0, 100)
-    }
-]
 
 gen_dir = os.path.join('./gen', model_name)
 os.makedirs(gen_dir, exist_ok=True)
 
-
-for metric in metrics:
-    plot_violin_from_csv(
-        file, metric['metric'], metric['m_type'], metric['limits'], metric['metric_name'], gen_dir)
+plot_violin_from_csv(
+    file, gen_dir)
