@@ -7,71 +7,82 @@ import numpy as np
 # CONFIGURATION
 ###############################################################################
 
-metric = "RMSD"
+metrics = ["gdt_ts", 'tm_score', 'rmsd']
 
-idxm = 20
-csv_file = f"./gen/Pairwise_Wilcoxon_rmsd-b{idxm}.csv"
+idx_ll = []
+idx_ms = ['20', '30', '40', '50',
+          'alpha-helix-rich', 'beta-sheet-rich', 'disordered', 'mixed']
+for metric in metrics:
+    for idxm in idx_ms:
 
-# Choose either:
-# "Raw p-value"
-# "Holm adjusted p"
+        csv_file = f"./gen/Pairwise_Wilcoxon_{metric}-b{idxm}.csv"
 
-value_column = "Holm adjusted p"
+        # Choose either:
+        # "Raw p-value"
+        # "Holm adjusted p"
 
-###############################################################################
-# LOAD
-###############################################################################
+        value_column = "Holm adjusted p"
 
-df = pd.read_csv(csv_file)
+        ###############################################################################
+        # LOAD
+        ###############################################################################
 
-models = sorted(
-    list(set(df["Model 1"]).union(set(df["Model 2"])))
-)
+        df = pd.read_csv(csv_file)
 
-heatmap = pd.DataFrame(
-    np.ones((len(models), len(models))),
-    index=models,
-    columns=models
-)
+        df['Model 1'] = df['Model 1'].str.upper()
+        df['Model 2'] = df['Model 2'].str.upper()
 
-###############################################################################
-# FILL MATRIX
-###############################################################################
+        models = sorted(
+            list(set(df["Model 1"]).union(set(df["Model 2"])))
+        )
 
-for _, row in df.iterrows():
+        # models = [model.upper() for model in models]
 
-    m1 = row["Model 1"]
-    m2 = row["Model 2"]
+        heatmap = pd.DataFrame(
+            np.ones((len(models), len(models))),
+            index=models,
+            columns=models
+        )
 
-    p = row[value_column]
+        ###############################################################################
+        # FILL MATRIX
+        ###############################################################################
 
-    # heatmap.loc[m1, m2] = p
-    # heatmap.loc[m2, m1] = p
+        for _, row in df.iterrows():
 
-    heatmap.loc[m1, m2] = -np.log10(max(p, 1e-320))
-    heatmap.loc[m2, m1] = -np.log10(max(p, 1e-320))
+            m1 = row["Model 1"]
+            m2 = row["Model 2"]
 
-###############################################################################
-# PLOT
-###############################################################################
+            p = row[value_column]
 
-plt.figure(figsize=(8, 7))
+            # heatmap.loc[m1, m2] = p
+            # heatmap.loc[m2, m1] = p
 
-sns.heatmap(
-    heatmap,
-    annot=True,
-    fmt=".3g",
-    cmap="viridis_r",
-    linewidths=0.5,
-    square=True,
-    cbar_kws={"label": "Adjusted p-value"}
-)
+            heatmap.loc[m1, m2] = -np.log10(max(p, 1e-320))
+            heatmap.loc[m2, m1] = -np.log10(max(p, 1e-320))
 
+        ###############################################################################
+        # PLOT
+        ###############################################################################
 
-plt.title(f"{metric} Pairwise Wilcoxon Test for bucket {idxm}")
+        plt.figure(figsize=(4, 3))
 
-plt.tight_layout()
+        sns.heatmap(
+            heatmap,
+            annot=True,
+            fmt=".3g",
+            cmap="viridis_r",
+            linewidths=0.5,
+            square=True,
+            cbar_kws={"label":
+                      r'$-\log_{10}(p\mathrm{-value})$'}
+        )
 
-plt.savefig(f"./gen/{metric}_Wilcoxon_heatmap_b{idxm}.png", dpi=300)
+        # plt.title(f"{metric} Pairwise Wilcoxon Test for bucket {idxm}")
 
-# plt.show()
+        plt.tight_layout()
+
+        plt.savefig(f"./gen/{metric}_Wilcoxon_heatmap_b{idxm}.png", dpi=300)
+        plt.close()
+
+        # plt.show()

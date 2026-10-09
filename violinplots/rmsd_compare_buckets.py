@@ -12,7 +12,7 @@ def plot_violin_from_csv(file, gen_dir):
 
     plt.figure(figsize=(5, 3))
 
-    with open('../count_stats.json', 'r') as f:
+    with open('../dbamp3-lengthwise-cluster.json', 'r') as f:
         count_dict = json.load(f)
 
     # === Step 2: Process each file ===
@@ -20,7 +20,7 @@ def plot_violin_from_csv(file, gen_dir):
 
     for bucket in ['20', '30', '40', '50']:
         df = pd.read_csv(file)
-        df = df[df['pdb_id'].isin(count_dict['id_bucket'][bucket])]
+        df = df[df['pdb_id'].isin(count_dict[bucket])]
         # col = df[column]  # or set explicitly, e.g., 'values'
 
         # sequence = col.dropna().tolist()
@@ -70,7 +70,7 @@ def plot_violin_from_csv(file, gen_dir):
     # plt.title("Overlapping KDE Plots")
     # plt.legend(title="Hllo")
     # plt.xticks(rotation=45)
-    plt.ylim(0, 1.5)
+    plt.ylim(0, 1.0)
     plt.tight_layout()
     # plt.show()
     # exit()
@@ -95,10 +95,10 @@ def plot_violin_from_csv(file, gen_dir):
 
 # Start Fill these
 
-file = '../Metrics Generated/per-residue-rmsd-job-dmp-5.csv'
+file = '../Metrics Generated/per-residue-rmsd-per-residue-rmsd-dbamp3-af2-vs-esm.filtered.csv'
 file = os.path.abspath(file)
 
-model_name = 'dmp-best'
+model_name = 'dbamp3-af2-vs-esm'
 # END Fill these
 
 gen_dir = os.path.join('./gen', model_name)

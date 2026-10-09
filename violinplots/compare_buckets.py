@@ -12,7 +12,7 @@ def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
 
     plt.figure(figsize=(5, 3))
 
-    with open('../count_stats.json', 'r') as f:
+    with open('../dbamp3-lengthwise-cluster.json', 'r') as f:
         count_dict = json.load(f)
 
     # === Step 2: Process each file ===
@@ -20,7 +20,7 @@ def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
 
     for bucket in ['20', '30', '40', '50']:
         df = pd.read_csv(file)
-        df = df[df['pdb_id'].isin(count_dict['id_bucket'][bucket])]
+        df = df[df['pdb_id'].isin(count_dict[bucket])]
         # col = df[column]  # or set explicitly, e.g., 'values'
 
         # sequence = col.dropna().tolist()
@@ -96,17 +96,19 @@ def plot_violin_from_csv(file, column, m_type, limits, metric_name, gen_dir):
 
 # Start Fill these
 
-file = '../Metrics Generated/metrics-metjob-v2-4.csv'
+file = '../Metrics Generated/metrics-metrics-dbamp3-af2-vs-rf2.filtered.csv'
 file = os.path.abspath(file)
 
-model_name = 'omf-best'
+model_name = 'dbamp3-af2-vs-rf2'
 # END Fill these
 
 metrics = [
-    # {
-    #     'metric': 'lddt',
-    #     'metric_name': 'LDDT',
-    # },
+    {
+        'metric': 'rmsd',
+        'metric_name': 'RMSD',
+        'm_type': 'max',
+        'limits': (0.0, 3.0)
+    },
     {
         'metric': 'native_contract',
         'metric_name': 'Native Contract',

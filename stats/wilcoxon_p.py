@@ -55,12 +55,12 @@ metrics = [
 #         on="pdb_id_frame"
 #     )
 
-with open('../count_stats.json', 'r') as f:
+with open('../ss_clusters-alt.json', 'r') as f:
     count_dict = json.load(f)
 
     print(count_dict.keys())
 
-for group, ids in count_dict['id_bucket'].items():
+for group, ids in count_dict.items():
 
     for metric in metrics:
 

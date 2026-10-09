@@ -26,15 +26,17 @@ for cluster, target_strings in ss_clusters.items():
     for file in csv_files:
         df = pd.read_csv(file)
 
+        df = df[df['per_res_ca_rmsd_A'] < 0.5]
+
         # print(df.head()``)
 
         top10 = (
             df[df["pdb_id"].isin(target_strings)]
             .sort_values("per_res_ca_rmsd_A", ascending=False)  # or True
-            .head(150)
+            .head(250)
         )
 
-        # print(top10.head(1))
+        # print(top10)
 
         top10_sets.append(set(top10["pdb_id"]))
 

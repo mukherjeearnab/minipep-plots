@@ -1,0 +1,11 @@
+Model 1,Model 2,Metric,N,Wilcoxon W,Raw p-value,Holm adjusted p
+af2,rf2,native_contract,9741,9414446.0,0.0,0.0
+af2,esm,native_contract,9741,11574276.0,0.0,0.0
+af2,omf,native_contract,9741,17584687.5,2.02693530349253e-108,4.05387060698506e-108
+af2,dmp,native_contract,9741,1028708.0,0.0,0.0
+rf2,esm,native_contract,9741,23175812.0,0.0481768205969275,0.0481768205969275
+rf2,omf,native_contract,9741,15437984.0,7.696055769597058e-196,3.078422307838823e-195
+rf2,dmp,native_contract,9741,4105800.5,0.0,0.0
+esm,omf,native_contract,9741,16459448.5,5.2313637251758755e-151,1.5694091175527627e-150
+esm,dmp,native_contract,9741,3287819.5,0.0,0.0
+omf,dmp,native_contract,9741,4518582.5,0.0,0.0

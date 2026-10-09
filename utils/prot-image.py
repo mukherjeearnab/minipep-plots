@@ -21,9 +21,11 @@ import os
 
 ############################
 # CHANGE THESE
-SOURCE_PATH = "../../../Downloads/new-ss-best-worst(1)/new-ss-best-worst/beta-best/renders_overlay_align-"
-PDB_ID = "2GL1"
-CLASS = "BETA-BEST"
+SOURCE_PATH = r"C:\Users\Arnab\Downloads\5NDA_renders_overlay_align"
+PDB_ID = "5NDA"
+CLASS = "ALPHA-BEST"
+HFLIP = True
+VFLIP = False
 ############################
 
 MODELS = [
@@ -58,7 +60,7 @@ for i, model in enumerate(MODELS):
             if pdb_id == PDB_ID:
                 metrics.append(('TM-score', tm_score[:4]))
                 metrics.append(('GDT-TS', gdt_ts[:5]))
-                metrics.append(('lDTT', lddt[:4]))
+                metrics.append(('lDDT', lddt[:4]))
                 metrics.append(('Q', native_contract[:4]))
                 break
 
@@ -190,6 +192,13 @@ def get_struct(panel) -> Image.Image:
     """Return full-height structure crop (or external image)."""
     if panel["image"] and os.path.exists(panel["image"]):
         img = Image.open(panel["image"]).convert("RGBA")
+
+        if HFLIP:
+            img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+
+        if VFLIP:
+            img = img.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+
         return img.resize((PANEL_W, PANEL_H), Image.LANCZOS)
     # idx = panel["source_crop_index"]
     # left = idx * src_pw

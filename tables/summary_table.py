@@ -2,9 +2,9 @@ import json
 import pandas as pd
 
 ############################
-file = '../Metrics Generated/metrics-metjob-v2-5.csv'
-rmsd_file = '../Metrics Generated/per-residue-rmsd-job-dmp-5.csv'
-ModelName = 'DMPfold2'
+file = '../Metrics Generated/metrics-metrics-dbamp3-rf2-vs-esm.filtered.csv'
+rmsd_file = '../Metrics Generated/per-residue-rmsd-per-residue-rmsd-dbamp3-rf2-vs-esm.filtered.csv'
+ModelName = 'RoseTTAFold2 vs. ESMFold'
 ###########################
 
 
@@ -28,7 +28,7 @@ metrics = [
     # },
     {
         'metric': 'native_contract',
-        'metric_name': 'N.C.',
+        'metric_name': '\\textbf{Q}',
         'm_type': 'max',
         'limits': (0.2, 1.0)
     },
@@ -53,7 +53,7 @@ print(r'''
 \begin{table}
 \centering
 \footnotesize
-\caption{Summary statistics of '''+ModelName+r''' for distributions of Native Contract, TM-score and GDT TS across our benchmark dataset.}
+\caption{Summary statistics of '''+ModelName+r''' for distributions of Native Contract, TM-score and GDT TS across dbAMP3 dataset.}
 \label{tab:stat_summary_'''+ModelName+r'''}
 \begin{tabular}{llcccc}
 \hline
@@ -63,7 +63,7 @@ print(r'''
 
 ##########
 # DO IT FOR RMSD
-with open('../count_stats.json', 'r') as f:
+with open('../dbamp3-lengthwise-cluster.json', 'r') as f:
     count_dict = json.load(f)
 line1 = f'\multirow{{2}}{{*}}{{RMSD}} & ' +\
         f'Mean $\\pm$ SD '
@@ -71,7 +71,9 @@ line2 = ' & Median (IQR) '
 for bucket in ['20', '30', '40', '50']:
     df = pd.read_csv(rmsd_file)
 
-    df = df[df['pdb_id'].isin(count_dict['id_bucket'][bucket])]
+    # df = df.dropna()
+
+    df = df[df['pdb_id'].isin(count_dict[bucket])]
 
     # --- Compute statistics ---
 
@@ -101,7 +103,7 @@ for metric in metrics:
     # line4 = ' & & Median (IQR) '
     for bucket in ['20', '30', '40', '50']:
         df = pd.read_csv(file)
-        df = df[df['pdb_id'].isin(count_dict['id_bucket'][bucket])]
+        df = df[df['pdb_id'].isin(count_dict[bucket])]
 
         # Add to master list with file identifier
         bucket = int(bucket)
